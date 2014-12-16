@@ -41,7 +41,7 @@ class MailGunMailSystem implements MailSystemInterface {
    */
   public function mail(array $message) {
     $from = $message['from'];
-    if (variable_get('mailgun_verify_from')) {
+    if (variable_get('mailgun_verify_from', '')) {
       if ($from != variable_get('mailgun_from', '')) {
         watchdog('mailgun', 'Email sent from unverified address: @from',
           array('@from' => $from));
@@ -109,7 +109,7 @@ class MailGunMailSystem implements MailSystemInterface {
 			$mailgun_message['bcc'] = $message['bcc_email'];
 		}
 
-    drupal_alter('mailgun_mail', $mailgun_message, $message);
+    drupal_alter('mailgun_mail', $mailgun_message);
 
     try {
       $result = $mailer->messages_send($mailgun_message);
@@ -151,7 +151,7 @@ class TestingMailGunMailSystem extends MailGunMailSystem implements MailSystemIn
       drupal_set_message(t('mailgun can\'t send email. Please !link.',
         array(
           '!link' => l('add a verified from address',
-            'admin/config/services/mailchimp/sts'
+            'admin/settings/mailgun'
           )
         )
       ), 'error');

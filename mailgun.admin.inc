@@ -11,8 +11,10 @@
  * @return
  *   An array containing form items to place on the module settings page.
  */
-function mailgun_admin_settings($form, &$form_state) {
-  $key = variable_get('mailgun_api_key');
+function mailgun_admin_settings(&$form_state) {
+  $form = array();
+
+  $key = variable_get('mailgun_api_key', '');
   $form['mailgun_api_key'] = array(
     '#title' => t('Mailgun API Key'),
     '#type' => 'textfield',
@@ -21,7 +23,7 @@ function mailgun_admin_settings($form, &$form_state) {
     '#default_value' => $key,
   );
 
-  $domain = variable_get('mailgun_domain');
+  $domain = variable_get('mailgun_domain', '');
   $form['mailgun_domain'] = array(
     '#title' => t('Mailgun Domain'),
     '#type' => 'textfield',
@@ -55,7 +57,7 @@ function mailgun_admin_settings($form, &$form_state) {
       '#title' => t('From address'),
       '#type' => 'textfield',
       '#description' => t('The sender email address. If this address has not been verified, messages will be queued and not sent until it is.'),
-      '#default_value' => variable_get('mailgun_from', variable_get('site_mail'))
+      '#default_value' => variable_get('mailgun_from', variable_get('site_mail', '')),
     );
 
     $form['email_options']['mailgun_from_name'] = array(
@@ -152,10 +154,10 @@ function mailgun_admin_settings($form, &$form_state) {
 function mailgun_admin_settings_submit($form, &$form_state) {
   $values = $form_state['values'];
 
+  $mail_system = variable_get('mail_system', array());
   switch ($form_state['values']['mailgun_status']) {
     case MAIL_GUN_STATUS_ON:
 			//	REBOL edit, fix the mailgun but, it kills my own mail system settings.
-			$mail_system = variable_get('mail_system');
 			$mail_system['default-system'] = 'MailGunMailSystem';
 			variable_set('mail_system', $mail_system);
       //variable_set('mail_system', array('default-system' => 'MailGunMailSystem'));
@@ -163,7 +165,6 @@ function mailgun_admin_settings_submit($form, &$form_state) {
       watchdog('mailgun', 'mailgun has been enabled.');
       break;
     case MAIL_GUN_STATUS_TEST:
-			$mail_system = variable_get('mail_system');
 			$mail_system['default-system'] = 'TestingMailGunMailSystem';
 			variable_set('mail_system', $mail_system);
       //variable_set('mail_system', array('default-system' => 'TestingMailGunMailSystem'));
@@ -171,7 +172,6 @@ function mailgun_admin_settings_submit($form, &$form_state) {
       watchdog('mailgun', 'mailgun has been placed in test mode.');
       break;
     case MAIL_GUN_STATUS_OFF:
-			$mail_system = variable_get('mail_system');
 			$mail_system['default-system'] = 'DefaultMailSystem';
 			variable_set('mail_system', $mail_system);
       //variable_set('mail_system', array('default-system' => 'DefaultMailSystem'));
@@ -189,7 +189,7 @@ function mailgun_admin_settings_submit($form, &$form_state) {
  *
  * @return array $form
  */
-function mailgun_test_form($form, &$form_state) {
+function mailgun_test_form(&$form_state) {
   $form['mailgun_test_address'] = array(
     '#type' => 'textfield',
     '#title' => t('Email address to send a test email to'),
@@ -215,7 +215,7 @@ function mailgun_test_form($form, &$form_state) {
   );
   $form['test_cancel'] = array(
     '#type' => 'link',
-    '#href' => 'admin/config/services/mailgun',
+    '#href' => 'admin/settings/mailgun',
     '#title' => t('Cancel'),
   );
 

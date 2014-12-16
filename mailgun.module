@@ -28,7 +28,7 @@ function mailgun_help($path, $arg) {
  * Implements hook_menu().
  */
 function mailgun_menu() {
-  $items['admin/config/services/mailgun'] = array(
+  $items['admin/settings/mailgun'] = array(
     'title' => 'Mailgun',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('mailgun_admin_settings'),
@@ -38,13 +38,13 @@ function mailgun_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
 
-  $items['admin/config/services/mailgun/settings'] = array(
+  $items['admin/settings/mailgun'] = array(
     'title' => 'Settings',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 0
   );
 
-  $items['admin/config/services/mailgun/test'] = array(
+  $items['admin/settings/mailgun/test'] = array(
     'title' => 'Send test email',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('mailgun_test_form'),
@@ -71,14 +71,8 @@ function mailgun_test_access() {
 /**
  * Implements hook_permission().
  */
-function mailgun_permission() {
-  return array(
-    'administer mailgun' => array(
-      'title' => t('Administer mailgun'),
-      'description' => t('Perform administration tasks for the mailgun email service.'),
-      "restrict access" => TRUE
-    ),
-  );
+function mailgun_perm() {
+  return array('administer mailgun');
 }
 
 /**
@@ -89,7 +83,7 @@ function mailgun_mail($key, &$message, $params) {
     $message['subject'] = $params['subject'];
     $message['body'] = $params['body'];
     if ($params['include_attachment']) {
-      $message['attachments'][] = drupal_realpath('misc/druplicon.png');
+      $message['attachments'][] = realpath('misc/druplicon.png');
       $message['body'] .= '  ' . t('The Drupal icon is included as an attachment to test the attachment functionality.');
     }
   }

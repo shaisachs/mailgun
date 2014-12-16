@@ -104,20 +104,11 @@ class MailGun {
 					$url .= '?' . $params;
 				}
 
-        $response = drupal_http_request($url, array(
-					'headers' => $header,
-          'method' => 'GET',
-          'timeout' => $this->timeout,
-        ));
+        $response = drupal_http_request($url, $header, 'GET', NULL, 3, $this->timeout);
         break;
 
       case 'POST':
-        $response = drupal_http_request($url, array(
-					'headers' => $header,
-          'method' => 'POST',
-          'data' => $params,
-          'timeout' => $this->timeout,
-        ));
+        $response = drupal_http_request($url, $header, 'POST', $params, 3, $this->timeout);
         break;
 
       default:
@@ -445,7 +436,7 @@ class MailGun {
       }
 
       $mime_type = file_get_mimetype($path);
-      if (!Mandrill::isValidContentType($mime_type)) {
+      if (!self::isValidContentType($mime_type)) {
         throw new Exception($mime_type . ' is not a valid content type (it should be ' . implode('*,', self::getValidContentTypes()) . ').');
       }
 
@@ -454,7 +445,7 @@ class MailGun {
       $struct['content'] = $file_buffer;
 
     } catch (Exception $e) {
-      throw new Mandrill_Exception('Error creating the attachment structure: ' . $e->getMessage());
+      throw new MailGun_Exception('Error creating the attachment structure: ' . $e->getMessage());
     }
 
     return $struct;
