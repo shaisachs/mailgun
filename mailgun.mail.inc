@@ -1,5 +1,7 @@
 <?php
 
+module_load_include('module', 'mailsystem', 'mailsystem');
+
 /**
  * @file
  * Implements mailgun as a Drupal MailSystemInterface
