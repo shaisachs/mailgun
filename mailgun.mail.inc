@@ -72,9 +72,14 @@ class MailGunMailSystem implements MailSystemInterface {
       }
     }
 
+    $plain_text = empty($message['params']['plaintext']) ?
+      drupal_html_to_text($message['body']) :
+      $message['params']['plaintext'];
+
+
     $mailgun_message = array(
       'html' => $html,
-      'text' => drupal_html_to_text($message['body']),
+      'text' => $plain_text,
       'subject' => $message['subject'],
       /*'from_name' => variable_get('mailgun_from_name', ''),*/
       'from' => $from,
